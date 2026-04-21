@@ -1,0 +1,15 @@
+# OMX runtime/session state
+.omx/context/
+.omx/interviews/
+.omx/logs/
+.omx/specs/
+.omx/state/
+.omx/plans/
+.omx/notepad.md
+.omx/metrics.json
+.omx/setup-scope.json
+.omx/hud-config.json
+.omx/tmux-hook.json
+
+# Generated OMX runtime helpers
+.omx/*.pid

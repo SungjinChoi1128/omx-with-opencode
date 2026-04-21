@@ -1,0 +1,6 @@
+[Append-only log; keep every entry timestamped]
+[YYYY-MM-DDTHH:MM:SSZ] assistant-summary: <what changed or what the assistant is asking the user to verify>
+[YYYY-MM-DDTHH:MM:SSZ] verification-output: <paste command output or summarize attached evidence>
+[YYYY-MM-DDTHH:MM:SSZ] blocker-note: <why progress is blocked>
+[YYYY-MM-DDTHH:MM:SSZ] decision-note: <important decision or scope boundary>
+[YYYY-MM-DDTHH:MM:SSZ] last-confirmed-step: <step number and status>
