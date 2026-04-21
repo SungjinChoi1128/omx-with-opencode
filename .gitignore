@@ -13,3 +13,8 @@
 
 # Generated OMX runtime helpers
 .omx/*.pid
+.omx/
+
+# Local OpenCode plugin dependencies
+.opencode/node_modules/
+.opencode/package-lock.json

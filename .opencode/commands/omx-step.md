@@ -1,9 +1,9 @@
 ---
-description: Execute exactly one Windows OMX plan step
+description: Execute one Windows OMX plan chunk or milestone
 agent: omx
 subtask: false
 ---
-Operate in **step** mode for step `$ARGUMENTS`.
+Operate in **step** mode for chunk `$ARGUMENTS`.
 
 Current source of truth:
 - @AGENTS.md
@@ -12,8 +12,11 @@ Current source of truth:
 - @.omx/SESSION.log
 
 Requirements:
-- Execute only step `$ARGUMENTS` from `.omx\PLAN.md`.
-- Provide only the code/change for that step.
-- Provide the exact Windows-compatible verification command.
-- Do not continue to the next step until the user pastes successful verification output.
-- If the step is unclear, blocked, or oversized, return `REPLAN` instead of continuing.
+- Resolve the active named plan from `.omx\PLAN.md`, then execute chunk `$ARGUMENTS`.
+- Execute the whole chunk, not a single tiny edit.
+- A chunk may include multiple safe local edits and local verification steps before stopping.
+- Provide the exact Windows-compatible verification command for the chunk gate.
+- If that command is safe, local, and non-destructive, run it yourself and include the real output.
+- Only ask the user to run it when it needs manual interaction, GUI context, external credentials/systems, or a long-lived process.
+- Stop only when the chunk reaches its declared gate or when `REPLAN` is needed.
+- If the chunk is unclear, blocked, or oversized, return `REPLAN` instead of continuing.

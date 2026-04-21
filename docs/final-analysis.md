@@ -15,6 +15,8 @@ Validate two things:
 
 The right way to think about it is:
 
+A key enabling decision is the explicit **precedence contract**: project-local OMX must win over user-level OMX for repo behavior.
+
 - **Not** “OMX internals ported to OpenCode”
 - **Yes** “OMX operating experience recreated for a single-agent Windows OpenCode environment”
 
@@ -22,10 +24,13 @@ That distinction is important.
 
 What we preserved is the **behavioral contract**:
 - interview before planning
+- brownfield codebase grounding before the next interview question
 - planning before execution
-- explicit step gating
+- explicit chunk/gate execution
 - verification before forward progress
+- agent-executed local verification when safe
 - persistent project state
+- plugin hooks for session/command logging and single-agent enforcement
 - strong operating rules in the agent prompt
 
 What we intentionally dropped is the **orchestration substrate**:
@@ -45,7 +50,7 @@ For a GitHub Copilot subscription environment, that tradeoff is the correct one.
 If the goal is to reproduce the **feeling and discipline** of OMX, the key layers are:
 
 1. **Rules layer** — strong project instructions
-2. **Flow layer** — interview → plan → step → verify
+2. **Flow layer** — interview → plan → execute → verify
 3. **State layer** — durable files that survive context loss
 4. **Verification layer** — no forward progress without proof
 5. **UX layer** — the user knows exactly what to type next
@@ -59,6 +64,7 @@ Implemented through:
 - `AGENTS.md`
 - `.opencode\agents\omx.md`
 - `.opencode\commands\*.md`
+- user-level `opencode.json` seeding when no global config exists yet
 
 Effect:
 - OpenCode receives a strongly constrained operating policy
@@ -68,9 +74,9 @@ Effect:
 #### B. Phase-gated flow
 Implemented through:
 - `@omx interview`
-- `@omx plan`
+- `/omx-plan`
 - `@omx step <n>`
-- `@omx verify`
+- `/omx-verify`
 
 Effect:
 - the model does not freewheel
@@ -80,7 +86,8 @@ Effect:
 #### C. Persistent state
 Implemented through:
 - `.omx\CONTEXT.md`
-- `.omx\PLAN.md`
+- `.omx\PLAN.md` (active-plan pointer)
+- `.omx\plans\<task-slug>.md` (named active/history plans)
 - `.omx\SESSION.log`
 
 Effect:
@@ -92,7 +99,7 @@ Effect:
 Implemented through:
 - per-step verify commands in `.omx\PLAN.md`
 - `PASS | FAIL | REPLAN`
-- refusal to advance without pasted evidence
+- refusal to advance without successful verification evidence
 
 Effect:
 - this preserves one of the most important practical benefits of OMX
@@ -179,6 +186,11 @@ Plan and command examples use Windows-compatible verification patterns such as:
 - `dotnet test`
 
 ### 2.2 Windows installer suitability
+
+The design now uses a hybrid install model:
+- **user-level install** in `~/.config/opencode` for machine-wide OMX availability
+- **project-level bootstrap** inside the repo for repo-specific state and rules
+
 
 The PowerShell installer at:
 - `install\windows\install-opencode-omx.ps1`

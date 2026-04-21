@@ -37,14 +37,24 @@ $filesToCopy = @(
     @{ Source = (Join-Path $repoRoot '.opencode\agents\omx.md'); Destination = (Join-Path $target '.opencode\agents\omx.md') },
     @{ Source = (Join-Path $repoRoot '.opencode\commands\omx-interview.md'); Destination = (Join-Path $target '.opencode\commands\omx-interview.md') },
     @{ Source = (Join-Path $repoRoot '.opencode\commands\omx-plan.md'); Destination = (Join-Path $target '.opencode\commands\omx-plan.md') },
+    @{ Source = (Join-Path $repoRoot '.opencode\commands\omx-execute.md'); Destination = (Join-Path $target '.opencode\commands\omx-execute.md') },
     @{ Source = (Join-Path $repoRoot '.opencode\commands\omx-step.md'); Destination = (Join-Path $target '.opencode\commands\omx-step.md') },
     @{ Source = (Join-Path $repoRoot '.opencode\commands\omx-verify.md'); Destination = (Join-Path $target '.opencode\commands\omx-verify.md') },
+    @{ Source = (Join-Path $repoRoot '.opencode\commands\omx-setup.md'); Destination = (Join-Path $target '.opencode\commands\omx-setup.md') },
+    @{ Source = (Join-Path $repoRoot '.opencode\commands\omx-doctor.md'); Destination = (Join-Path $target '.opencode\commands\omx-doctor.md') },
+    @{ Source = (Join-Path $repoRoot '.opencode\commands\omx-update.md'); Destination = (Join-Path $target '.opencode\commands\omx-update.md') },
+    @{ Source = (Join-Path $repoRoot '.opencode\commands\omx-help.md'); Destination = (Join-Path $target '.opencode\commands\omx-help.md') },
+    @{ Source = (Join-Path $repoRoot '.opencode\commands\omx-cancel.md'); Destination = (Join-Path $target '.opencode\commands\omx-cancel.md') },
+    @{ Source = (Join-Path $repoRoot '.opencode\plugins\omx-hooks.js'); Destination = (Join-Path $target '.opencode\plugins\omx-hooks.js') },
+    @{ Source = (Join-Path $repoRoot '.omx\templates\ACTIVE_PLAN.template.md'); Destination = (Join-Path $target '.omx\templates\ACTIVE_PLAN.template.md') },
     @{ Source = (Join-Path $repoRoot '.omx\templates\CONTEXT.template.md'); Destination = (Join-Path $target '.omx\templates\CONTEXT.template.md') },
     @{ Source = (Join-Path $repoRoot '.omx\templates\PLAN.template.md'); Destination = (Join-Path $target '.omx\templates\PLAN.template.md') },
     @{ Source = (Join-Path $repoRoot '.omx\templates\SESSION.template.log'); Destination = (Join-Path $target '.omx\templates\SESSION.template.log') },
     @{ Source = (Join-Path $repoRoot '.omx\verify-windows-protocol.ps1'); Destination = (Join-Path $target '.omx\verify-windows-protocol.ps1') },
     @{ Source = (Join-Path $repoRoot 'docs\command-response-templates.md'); Destination = (Join-Path $target 'docs\command-response-templates.md') },
-    @{ Source = (Join-Path $repoRoot 'docs\pilot-workflow.md'); Destination = (Join-Path $target 'docs\pilot-workflow.md') }
+    @{ Source = (Join-Path $repoRoot 'docs\pilot-workflow.md'); Destination = (Join-Path $target 'docs\pilot-workflow.md') },
+    @{ Source = (Join-Path $repoRoot 'docs\precedence-contract.md'); Destination = (Join-Path $target 'docs\precedence-contract.md') },
+    @{ Source = (Join-Path $repoRoot 'docs\parity-matrix.md'); Destination = (Join-Path $target 'docs\parity-matrix.md') }
 )
 
 foreach ($file in $filesToCopy) {
@@ -54,6 +64,10 @@ foreach ($file in $filesToCopy) {
 $contextTarget = Join-Path $target '.omx\CONTEXT.md'
 $planTarget = Join-Path $target '.omx\PLAN.md'
 $sessionTarget = Join-Path $target '.omx\SESSION.log'
+$plansDir = Join-Path $target '.omx\plans'
+if (-not (Test-Path $plansDir)) {
+    New-Item -ItemType Directory -Path $plansDir -Force | Out-Null
+}
 
 if ((-not (Test-Path $contextTarget)) -or $Force) {
     @'
@@ -94,16 +108,18 @@ else {
 
 if ((-not (Test-Path $planTarget)) -or $Force) {
     @'
-# Project Plan
+# Active Plan Pointer
 
-## Rules
-- One active step at a time
-- Every step needs a Windows-compatible verification command
-- No step n+1 before step n verifies
+- active_plan: none
+- status: none
+- task: none
+- last_updated: <fill during @omx plan>
+- mode: interview
+- next_gate: define task and create named plan
 
-## Steps
-- [ ] Step 1: Create plan during @omx plan
-  Verify (Windows): <fill during @omx plan>
+## Notes
+- The real plan should be written to `.omx\plans\<task-slug>.md`.
+- Update this pointer whenever a new active plan is created.
 '@ | Set-Content -Path $planTarget
     Write-Host "INSTALLED: $planTarget"
 }
@@ -124,3 +140,4 @@ Write-Host 'Next steps:'
 Write-Host '1. Open your target repo in OpenCode.'
 Write-Host '2. Use @omx interview to begin.'
 Write-Host '3. Optionally verify the pack with powershell -ExecutionPolicy Bypass -File .\.omx\verify-windows-protocol.ps1'
+Write-Host '4. Use /omx-help for the full workflow summary.'
